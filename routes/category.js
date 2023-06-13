@@ -5,20 +5,20 @@ const category = require('../models/category');
 
 app.get('/category', (req, res) => {
   category.find({})
-    .exec((err, category) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          msg: "Error getting categories",
-          error: err
-        });
-      }
-
-      res.json({
+    .exec()
+    .then(category => {
+      res.status(200).json({
         ok: true,
         msg: 'Categories gotten successfully',
         length: category.length,
         data: category
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({
+        ok: false,
+        msg: "Error getting categories",
+        error: err
       });
     });
 });

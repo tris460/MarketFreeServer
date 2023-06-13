@@ -8,20 +8,20 @@ app.get('/users', (req, res) => {
     .populate('purchasedProducts', 'id')
     .populate('shoppingCart', 'id')
     .populate('productsForSale', 'id')
-    .exec((err, users) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          msg: 'Error getting the users',
-          error: err
-        });
-      }
-
+    .exec()
+    .then(users => {
       res.json({
         ok: true,
         msg: 'Users gotten successfully',
         length: users.length,
         data: users
+      });  
+    })
+    .catch(err => {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Error getting the users',
+        error: err
       });
     });
 });

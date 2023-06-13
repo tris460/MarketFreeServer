@@ -5,21 +5,21 @@ const benefits = require('../models/benefits');
 
 app.get('/benefits', (req, res) => {
   benefits.find({})
-    .exec((err, benefits) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          msg: "Error getting benefits",
-          error: err
-        });
-      }
-
+    .exec()
+    .then(benefits => {
       res.json({
         ok: true,
         msg: 'Benefits gotten successfully',
         length: benefits.length,
         data: benefits
       });
+    })
+    .catch(err => {
+      return res.status(400).json({
+        ok: false,
+        msg: "Error getting benefits",
+        error: err
+      });        
     });
 });
 

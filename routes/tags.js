@@ -5,20 +5,20 @@ const tags = require('../models/tags');
 
 app.get('/tags', (req, res) => {
   tags.find({})
-    .exec((err, tags) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          msg: "Error getting tags",
-          error: err
-        });
-      }
-
+    .exec()
+    .then(tags => {
       res.json({
         ok: true,
         msg: 'Tags gotten successfully',
         length: tags.length,
         data: tags
+      });  
+    })
+    .catch(err => {
+      return res.status(400).json({
+        ok: false,
+        msg: "Error getting tags",
+        error: err
       });
     });
 });

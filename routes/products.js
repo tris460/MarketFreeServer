@@ -9,20 +9,20 @@ app.get('/products', (req, res) => {
     .populate('tags', 'name')
     .populate('category', 'name')
     .populate('user', 'id')
-    .exec((err, products) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          msg: 'Error getting the products',
-          error: err
-        });
-      }
-
+    .exec()
+    .then(products => {
       res.json({
         ok: true,
         msg: 'Products gotten successfully',
         length: products.length,
         data: products
+      });
+    })
+    .catch(err => {
+      return res.status(400).json({
+        ok: false,
+        msg: 'Error getting the products',
+        error: err
       });
     });
 });
