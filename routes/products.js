@@ -1,19 +1,18 @@
 const express = require("express");
 const _ = require('underscore');
 const app = express();
-const products = require('../models/products');
+const Product = require('../models/products'); // Importa el modelo de productos
 
 app.get('/products', (req, res) => {
-  products.find({})
+  Product.find({})
     .populate('promotion', 'name')
     .populate('tags', 'name')
     .populate('category', 'name')
     .populate('user', 'id')
-    .exec()
     .then(products => {
       res.json({
         ok: true,
-        msg: 'Products gotten successfully',
+        msg: 'Products retrieved successfully',
         length: products.length,
         data: products
       });
@@ -21,14 +20,14 @@ app.get('/products', (req, res) => {
     .catch(err => {
       return res.status(400).json({
         ok: false,
-        msg: 'Error getting the products',
+        msg: 'Error retrieving products',
         error: err
       });
     });
 });
 
 app.post('/products', (req, res) => {
-  let product = new products({
+  let product = new Product({
     name: req.body.name,
     price: req.body.price,
     description: req.body.description,
@@ -44,63 +43,62 @@ app.post('/products', (req, res) => {
     user: req.body.user
   });
 
-  product.save((err, product) => {
-    if (err) {
+  product.save()
+    .then(savedProduct => {
+      res.json({
+        ok: true,
+        msg: 'Product saved successfully',
+        data: savedProduct
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error saving product',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'Product saved successfully',
-      data: product
     });
-  });
 });
 
-app.put("/product/:id", function(req, res) {
+app.put("/products/:id", function(req, res) {
   let id = req.params.id;
-  let body = _.pick(req.body, ['name', 'price', 'description', 'discount', 'image', 'quantity', 'publishedDay', 
-                    'status', 'review', 'promotion', 'tags', 'category', 'user']);
+  let body = _.pick(req.body, ['name', 'price', 'description', 'discount', 'image', 'quantity', 'publishedDay', 'status', 'review', 'promotion', 'tags', 'category', 'user']);
 
-  products.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, product) => {
-    if (err) {
+  Product.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' })
+    .then(updatedProduct => {
+      res.json({
+        ok: true,
+        msg: 'Product updated successfully',
+        data: updatedProduct
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error updating product',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'Product updated successfully',
-      data: product
-    })
-  });
+    });
 });
 
-app.delete("/product/:id", function(req, res) {
+app.delete("/products/:id", function(req, res) {
   let id = req.params.id;
 
-  products.findByIdAndUpdate(id, { status: false }, { new: true, runValidators: true, context: 'query' }, (err, product) => {
-    if (err) {
+  Product.findByIdAndUpdate(id, { status: false }, { new: true, runValidators: true, context: 'query' })
+    .then(deletedProduct => {
+      res.json({
+        ok: true,
+        msg: 'Product deleted successfully',
+        data: deletedProduct
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error deleting product',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'Product deleted successfully',
-      data: product
     });
-  })
 });
 
 module.exports = app;

@@ -1,33 +1,32 @@
 const express = require("express");
 const _ = require('underscore');
 const app = express();
-const users = require('../models/users');
+const User = require('../models/users'); // Importa el modelo de usuarios
 
 app.get('/users', (req, res) => {
-  users.find({})
+  User.find({})
     .populate('purchasedProducts', 'id')
     .populate('shoppingCart', 'id')
     .populate('productsForSale', 'id')
-    .exec()
     .then(users => {
       res.json({
         ok: true,
-        msg: 'Users gotten successfully',
+        msg: 'Users retrieved successfully',
         length: users.length,
         data: users
-      });  
+      });
     })
     .catch(err => {
       return res.status(400).json({
         ok: false,
-        msg: 'Error getting the users',
+        msg: 'Error retrieving users',
         error: err
       });
     });
 });
 
 app.post('/users', (req, res) => {
-  let user = new users({
+  let user = new User({
     name: req.body.name,
     lastname: req.body.lastname,
     email: req.body.email,
@@ -38,62 +37,62 @@ app.post('/users', (req, res) => {
     productsForSale: req.body.productsForSale
   });
 
-  user.save((err, user) => {
-    if (err) {
+  user.save()
+    .then(savedUser => {
+      res.json({
+        ok: true,
+        msg: 'User saved successfully',
+        data: savedUser
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error saving user',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'User saved successfully',
-      data: user
     });
-  });
 });
 
 app.put("/users/:id", function(req, res) {
   let id = req.params.id;
   let body = _.pick(req.body, ['name', 'lastname', 'email', 'password', 'image', 'purchasedProducts', 'shoppingCart', 'productsForSale']);
 
-  users.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, user) => {
-    if (err) {
+  User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' })
+    .then(updatedUser => {
+      res.json({
+        ok: true,
+        msg: 'User updated successfully',
+        data: updatedUser
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error updating user',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'User updated successfully',
-      data: user
-    })
-  });
+    });
 });
 
 app.delete("/users/:id", function(req, res) {
   let id = req.params.id;
 
-  users.findByIdAndUpdate(id, { status: false }, { new: true, runValidators: true, context: 'query' }, (err, user) => {
-    if (err) {
+  User.findByIdAndUpdate(id, { status: false }, { new: true, runValidators: true, context: 'query' })
+    .then(deletedUser => {
+      res.json({
+        ok: true,
+        msg: 'User deleted successfully',
+        data: deletedUser
+      });
+    })
+    .catch(err => {
       return res.status(400).json({
         ok: false,
         msg: 'Error deleting user',
         error: err
       });
-    }
-
-    res.json({
-      ok: true,
-      msg: 'User deleted successfully',
-      data: user
     });
-  })
 });
 
 module.exports = app;
