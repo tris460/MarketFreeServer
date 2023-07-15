@@ -16,6 +16,7 @@
   "author": "Beatriz Martinez Perez",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "mongoose": "^7.2.2",
     "underscore": "^1.13.6"
