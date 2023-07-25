@@ -17,6 +17,7 @@ app.use(require('./routes/promotions'));
 app.use(require('./routes/tags'));
 app.use(require('./routes/users'));
 app.use(require('./routes/payment'));
+app.use(require('./routes/login'))
 
 mongoose.connect('mongodb://127.0.0.1:27017/marketFree')
     .then(() => {
