@@ -30,6 +30,7 @@ app.post('/users', (req, res) => {
     name: req.body.name,
     lastname: req.body.lastname,
     email: req.body.email,
+    address: req.body.address,
     password: req.body.password,
     image: req.body.image,
     purchasedProducts: req.body.purchasedProducts,
