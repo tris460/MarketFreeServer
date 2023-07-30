@@ -159,4 +159,46 @@ app.post('/users/:id/add-to-cart', async(req, res)=>{
   }
 });
 
+app.patch('/users/:id/delete-from-cart', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { productId } = req.body;
+      
+      const user = await User.findById(id);
+
+    if(!user){
+      return res.status(404).json({
+        ok:false,
+        message:"user not found"
+      });
+    }
+
+    // Buscar el índice del producto en el carrito del usuario
+    const productIndex = user.shoppingCart.indexOf(productId);
+
+    if (productIndex === -1) {
+      return res.status(404).json({
+        ok: false,
+        message: "Product not found in the shopping cart"
+      });
+    }
+
+    // Eliminar el producto del carrito
+    user.shoppingCart.splice(productIndex, 1);
+    await user.save();
+
+    return res.status(200).json({
+      ok: true,
+      user,
+      msg: "Product removed from cart"
+    });
+    } catch (error) {
+      console.log(error.message)
+      return res.status(500).json({
+        ok:false,
+        error:error.message,
+      })
+    }
+})
+
 module.exports = app;
