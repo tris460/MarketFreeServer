@@ -18,7 +18,7 @@ app.use(require('./routes/tags'));
 app.use(require('./routes/users'));
 app.use(require('./routes/payment'));
 
-mongoose.connect('mongodb://127.0.0.1:27017/marketFree')
+mongoose.connect('mongodb://127.0.0.1:27017/marketFree') //TODO: Update URL 
     .then(() => {
         console.log('Database online');
     })
